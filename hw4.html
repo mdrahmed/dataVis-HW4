@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Visualization – Homework 4</title>
+
+    <link rel="stylesheet" href="styles.css" />
+
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://d3js.org/d3-geo-projection.v4.js"></script>
+    <script src="https://d3js.org/topojson.v3.js"></script>
+
+    <script src="js/line-chart.js"></script>
+    <script src="js/map.js"></script>
+    <script src="js/script.js"></script>
+
+
+    <style>
+
+        body {
+          background: #fcfcfa;
+        }
+        
+        .stroke {
+          fill: none;
+          stroke: #000;
+          stroke-width: 3px;
+        }
+        
+        .fill {
+          fill: #fff;
+        }
+        
+        .graticule {
+          fill: none;
+          stroke: #777;
+          stroke-width: .5px;
+          stroke-opacity: .5;
+        }
+        .graticule.outline {
+          stroke-width: 2px;
+        }
+        
+        .label {
+          font: 300 9px "Helvetica Neue", Helvetica, Arial, sans-serif;
+          text-anchor: end;
+        }
+          
+        .land {
+          fill: #222;
+        }
+        
+        .boundary {
+          fill: none;
+          stroke: #fff;
+          stroke-width: .5px;
+        }
+        
+    </style>
+
+</head>
+
+<body>
+    <div class="header">
+        <h1>COVID-19 World Case Tracker</h1>
+        <p>Name: Your Name; E-Mail: Your E-Mail; UID: Your UID</p>
+    </div>
+
+    <div id="content">
+        <svg id="map"  viewBox="0 0 975 610">
+            <g id="graticules"></g>
+            <g id="countries"></g>
+        </svg>
+        <svg id="line-chart">
+            <g id="x-axis"></g>
+            <g id="y-axis"></g>
+            <g id="lines"></g>
+            <g id="overlay"><line></line></g>
+        </svg>
+        <button id="clear-button">Clear Selected Countries</button>
+    </div>
+</body>
+
+</html>
