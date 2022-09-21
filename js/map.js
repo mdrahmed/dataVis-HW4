@@ -20,6 +20,8 @@ class MapVis {
 
     this.countries = topojson.feature(this.globalApplicationState.mapData, this.globalApplicationState.mapData.objects.countries)
 
+    console.log("covidData: ",this.globalApplicationState.covidData[0].total_cases_per_million);
+
     this.path = d3.geoPath().projection(projection);
 
     this.svg = d3.select('#map')
@@ -70,7 +72,10 @@ class MapVis {
 // 		return ('translate(' + projection(c[0]) + ')')
 // 	});
 
+    
 
+    this.colorScale = d3.scaleSequential(d3.interpolateReds).domain([0, 1]);
+    console.log(d3.interpolateReds(0.125));
 
     this.svg.select("#graticules")
             .append("path")
@@ -83,6 +88,25 @@ class MapVis {
             .attr('d', this.path(this.countries))
             .attr('fill', 'none')
             .attr('stroke', 'grey')
+            .attr('fill',(d,i) => d3.max(console.log(d[i].total_cases_per_million),d[i].total_cases_per_million))
+            // .enter()
+            // .attr('fill',d3.interpolateReds(0.125));
+            // .attr('fill',(d) => colorScale(Math.random()))
+            
+    
+    // this.svg.select("#countries")
+    //         .selectAll('path')
+    //         .data(this.countries)
+
+
+
+    // this.svg.select('#countries')
+    //         .data(this.globalApplicationState.covidData)
+    //         // .enter().insert("path", "#graticules")
+    //         //   .attr("d", path)
+    //           // .style('fill',(d,i) => this.colorScale(d3.max(d[i].total_cases_per_million)))
+    //           .attr('fill',(d) => colorScale(Math.random()))
+
 
   }
 
