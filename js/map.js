@@ -18,11 +18,11 @@ class MapVis {
     // let geoJSON = topojson.feature(this.globalApplicationState, this.globalApplicationState.mapData);
     console.log("geo converted to features: ",topojson.feature(this.globalApplicationState.mapData, this.globalApplicationState.mapData.objects.countries).features);
     this.countries = topojson.feature(this.globalApplicationState.mapData, this.globalApplicationState.mapData.objects.countries).features;
-    console.log("covidData: ",this.globalApplicationState.covidData[10000].iso_code);
-    console.log("covidData: ",this.globalApplicationState.covidData[2].iso_code);
-    console.log("covidData: ",this.globalApplicationState.covidData[3].iso_code);
-    console.log("covidData: ",this.globalApplicationState.covidData[4].iso_code);
-    console.log("covidData: ",this.globalApplicationState.covidData[5].iso_code);
+    // console.log("covidData: ",this.globalApplicationState.covidData[10000].iso_code);
+    // console.log("covidData: ",this.globalApplicationState.covidData[2].iso_code);
+    // console.log("covidData: ",this.globalApplicationState.covidData[3].iso_code);
+    // console.log("covidData: ",this.globalApplicationState.covidData[4].iso_code);
+    // console.log("covidData: ",this.globalApplicationState.covidData[5].iso_code);
 
     this.path = d3.geoPath().projection(projection);
 
@@ -31,58 +31,115 @@ class MapVis {
     this.graticule = d3.geoGraticule();
     // this.svg.select("graticules")
             
+
+    this.colorScale = d3.scaleSequential(d3.interpolateReds).domain([0, 655309.333]);
+    // this.color = d3.scaleOrdinal(d3.schemeCategory10);
+    // // this.colorS = d3.scaleSequential(d3.interpolateReds).domain([0, 99990.076]);
+    // this.max_cases=0;
+    // this.colorS = d3.scaleSequential(d3.interpolate('#fedbcc', '#dd2a25'))
+    //     .domain([0, this.max_cases])
+    // // this.scaleLin = d3.scaleLinear().domain(d3.extent(this.globalApplicationState.covidData, function(d) { return d3.max(d.total_cases_per_million) }))
+    // this.scaleLin = d3.scaleLinear().domain(0,655309.333);
+
     // grid lines
     this.svg.select("#graticules")
-            .selectAll("path")
-	          .data(this.graticule.lines())
-            .enter().append("path")
-              .attr("class", "graticule line")
-              .attr("id", function(d) {
-                var c = d.coordinates;
-                if (c[0][0] === c[1][0]) {
-                  return (c[0][0] < 0) ? -c[0][0] + "W" : +c[0][0] + "E";
-                }
-                else if (c[0][1] === c[1][1]) {
-                  return (c[0][1] < 0) ? -c[0][1] + "S" : c[0][1] + "N";
-                }
-                })
-              .attr("d", this.path);
-
-
-    this.colorScale = d3.scaleSequential(d3.interpolateReds).domain([-10000, 50000]);
-    this.color = d3.scaleOrdinal(d3.schemeCategory10);
-
-    this.svg.select("#graticules")
+            // .selectAll("path")
             .append("path")
-            .datum(this.graticule.outline)
-            .attr("class", "graticule outline")
-            .attr("d", this.path); 
+	          // .data(this.graticule.lines())
+            .datum(this.graticule)
+            .attr("d",this.path)
+            .attr('fill', 'none')
+            .attr('stroke', 'black')
+            .attr("opacity", 0.3)
+            // .enter().append("path")
+            //   .attr("class", "graticule line")
+            //   .attr("id", function(d) {
+            //     var c = d.coordinates;
+            //     if (c[0][0] === c[1][0]) {
+            //       return (c[0][0] < 0) ? -c[0][0] + "W" : +c[0][0] + "E";
+            //     }
+            //     else if (c[0][1] === c[1][1]) {
+            //       return (c[0][1] < 0) ? -c[0][1] + "S" : c[0][1] + "N";
+            //     }
+            //     })
+            //   .attr("d", this.path);
+
+            this.svg.select("#graticules")
+                    .append("path")
+                    .datum(this.graticule.outline)
+                    .attr("class", "graticule outline")
+                    .attr("d", this.path); 
+
+
+    this.svg.select("#countries")
+            .selectAll("path")
+            .data(this.countries)
+            .enter()
+              .append("path")
+              .attr("class",'country')
+              .attr("d",this.path)
+              .attr("fill",(d,i) => {
+                      console.log(d.id,i);
+                      // iso-code is mapped to id of countries. Just get all the cases in the array using loop. Then get the maximum of that using d3.max
+                      
+                      this.max_cases =  d3.max(  this.globalApplicationState.covidData, (n) => {
+                        // (n.iso_code === d.id) ? n.total_cases_per_million : null;
+                        if(n.iso_code === d.id){
+                          // console.log(n.total_cases_per_million);
+                          return parseFloat(n.total_cases_per_million);
+                        }
+                        else return 0;
+                      }) 
+                      // this.max_cases = d3.max( this.globalApplicationState.covidData, (n) => (n.iso_code === d.id) ? parseFloat(n.total_cases_per_million) : null) 
+                      console.log("max_cases: ",this.max_cases);
+                      // console.log(d3.max(arr));
+                      // return this.i(d.color = this.max_cases); 
+                      return this.colorScale(this.max_cases);
+                      // return this.color(d.color = this.max_cases);
+                      // return this.colorS(d.color = this.max_cases);
+                      // return this.scaleLin(d.color = this.max_cases);
+                    })
+
+            // .enter().insert("path","#graticules")
+            //     .attr('class','country')
+            //     .attr("d",this.path)
+            //     .attr('stroke', 'grey')
+            //     .style('fill', (d,i) => {
+            //       console.log(d.id,i);
+            //       // iso-code is mapped to id of countries. Just get all the cases in the array using loop. Then get the maximum of that using d3.max
+            //       let max_cases = 0;
+            //       // this.max_cases = d3.max( this.globalApplicationState.covidData, (n) => {
+            //       //   // (n.iso_code === d.id) ? n.total_cases_per_million : null;
+            //       //   if(n.iso_code === d.id){
+            //       //     // console.log(n.total_cases_per_million);
+            //       //     return n.total_cases_per_million;
+            //       //   }
+            //       //   else return null;
+            //       // }) 
+            //       max_cases = d3.max( this.globalApplicationState.covidData, (n) => (n.iso_code === d.id) ? n.total_cases_per_million : null) 
+            //       console.log("max_cases: ",max_cases);
+            //       // console.log(d3.max(arr));
+            //       return this.colorScale(max_cases);
+            //       // return this.color(d.color = max_cases);
+            //     })
+                // .on('click',function() {
+                //   d3.select(this)
+                //     .attr('stroke','black')
+                // })
+
+
+    // 
 
 // trying a new method
-    this.svg.selectAll("#countries")
-            .data(this.countries)
-            .enter().insert("path","#graticules")
-                .attr('class','country')
-                .attr("d",this.path)
-                .attr('stroke', 'grey')
-                .style('fill', (d,i) => {
-                  console.log(d.id,i);
-                  // iso-code is mapped to id of countries. Just get all the cases in the array using loop. Then get the maximum of that using d3.max
-                  let max_cases = 0;
-                  // this.max_cases = d3.max( this.globalApplicationState.covidData, (n) => {
-                  //   // (n.iso_code === d.id) ? n.total_cases_per_million : null;
-                  //   if(n.iso_code === d.id){
-                  //     // console.log(n.total_cases_per_million);
-                  //     return n.total_cases_per_million;
-                  //   }
-                  //   else return null;
-                  // }) 
-                  max_cases = d3.max( this.globalApplicationState.covidData, (n) => (n.iso_code === d.id) ? n.total_cases_per_million : null) 
-                  console.log("max_cases: ",max_cases);
-                  // console.log(d3.max(arr));
-                  // return this.colorScale(max_cases);
-                  return this.color(d.color = max_cases);
-                })
+  
+//Button
+    // d3.select("#clear-button")
+    //   .on('click',function () {
+    //     console.log("Hello")
+    //     this.svg.selectAll("#countries")
+    //             .attr('stroke', 'grey')
+      
+    // })
 
 // all the countries are selected at one time
     // this.svg.select('#countries')
