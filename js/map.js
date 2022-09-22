@@ -16,11 +16,13 @@ class MapVis {
     // adding map
     console.log("topoJSON: ",this.globalApplicationState.mapData);
     // let geoJSON = topojson.feature(this.globalApplicationState, this.globalApplicationState.mapData);
-    console.log("geo: ",topojson.feature(this.globalApplicationState.mapData, this.globalApplicationState.mapData.objects.countries));
-
-    this.countries = topojson.feature(this.globalApplicationState.mapData, this.globalApplicationState.mapData.objects.countries)
-
-    console.log("covidData: ",this.globalApplicationState.covidData[0].total_cases_per_million);
+    console.log("geo converted to features: ",topojson.feature(this.globalApplicationState.mapData, this.globalApplicationState.mapData.objects.countries).features);
+    this.countries = topojson.feature(this.globalApplicationState.mapData, this.globalApplicationState.mapData.objects.countries).features;
+    console.log("covidData: ",this.globalApplicationState.covidData[10000].iso_code);
+    console.log("covidData: ",this.globalApplicationState.covidData[2].iso_code);
+    console.log("covidData: ",this.globalApplicationState.covidData[3].iso_code);
+    console.log("covidData: ",this.globalApplicationState.covidData[4].iso_code);
+    console.log("covidData: ",this.globalApplicationState.covidData[5].iso_code);
 
     this.path = d3.geoPath().projection(projection);
 
@@ -46,36 +48,9 @@ class MapVis {
                 })
               .attr("d", this.path);
 
-// this.svg.selectAll('text')
-// .data(graticule.lines())
-// 	.enter().append("text")
-// 	.text(function(d) {
-//       var c = d.coordinates;
-// 			if ((c[0][0] == c[1][0]) && (c[0][0] % 30 == 0)) {return (c[0][0]);}
-// 			else if (c[0][1] == c[1][1]) {return (c[0][1]);}
-// 		})
-// 	.attr("class","label")
-// 	.attr("style", function(d) {
-//       var c = d.coordinates;
-//       return (c[0][1] == c[1][1]) ? "text-anchor: end" : "text-anchor: middle";
-//    })
-// 	.attr("dx", function(d) {
-//       var c = d.coordinates;
-//       return (c[0][1] == c[1][1]) ? -10 : 0;
-//   })
-// 	.attr("dy", function(d) {
-//       var c = d.coordinates;
-//       return (c[0][1] == c[1][1]) ? 4 : 10;
-//   })
-// 	.attr('transform', function(d) {
-//     var c = d.coordinates;
-// 		return ('translate(' + projection(c[0]) + ')')
-// 	});
 
-    
-
-    this.colorScale = d3.scaleSequential(d3.interpolateReds).domain([0, 1]);
-    console.log(d3.interpolateReds(0.125));
+    this.colorScale = d3.scaleSequential(d3.interpolateReds).domain([-10000, 50000]);
+    this.color = d3.scaleOrdinal(d3.schemeCategory10);
 
     this.svg.select("#graticules")
             .append("path")
@@ -83,16 +58,65 @@ class MapVis {
             .attr("class", "graticule outline")
             .attr("d", this.path); 
 
-    this.svg.select('#countries')
-            .append('path')
-            .attr('d', this.path(this.countries))
-            .attr('fill', 'none')
-            .attr('stroke', 'grey')
-            .attr('fill',(d,i) => d3.max(console.log(d[i].total_cases_per_million),d[i].total_cases_per_million))
-            // .enter()
-            // .attr('fill',d3.interpolateReds(0.125));
-            // .attr('fill',(d) => colorScale(Math.random()))
-            
+// trying a new method
+    this.svg.selectAll("#countries")
+            .data(this.countries)
+            .enter().insert("path","#graticules")
+                .attr('class','country')
+                .attr("d",this.path)
+                .attr('stroke', 'grey')
+                .style('fill', (d,i) => {
+                  console.log(d.id,i);
+                  // iso-code is mapped to id of countries. Just get all the cases in the array using loop. Then get the maximum of that using d3.max
+                  let max_cases = 0;
+                  // this.max_cases = d3.max( this.globalApplicationState.covidData, (n) => {
+                  //   // (n.iso_code === d.id) ? n.total_cases_per_million : null;
+                  //   if(n.iso_code === d.id){
+                  //     // console.log(n.total_cases_per_million);
+                  //     return n.total_cases_per_million;
+                  //   }
+                  //   else return null;
+                  // }) 
+                  max_cases = d3.max( this.globalApplicationState.covidData, (n) => (n.iso_code === d.id) ? n.total_cases_per_million : null) 
+                  console.log("max_cases: ",max_cases);
+                  // console.log(d3.max(arr));
+                  // return this.colorScale(max_cases);
+                  return this.color(d.color = max_cases);
+                })
+
+// all the countries are selected at one time
+    // this.svg.select('#countries')
+    //           .append('path')
+    //           .attr('d', this.path(this.countries))
+    //           // .attr('fill', d3.interpolateReds( 0.125))
+    //           .attr('stroke', 'grey')
+    //           // .attr('fill',(d,i) => d3.max(console.log(d[i].total_cases_per_million),d[i].total_cases_per_million))
+
+    // console.log("countries: ",this.countries.features);
+
+    // this.svg.select('#countries')
+    //         .selectAll('path')
+    //         .data(this.countries.features)
+    //         // .data(this.globalApplicationState.covidData)
+    //         // .enter()
+    //         // .attr('fill', d3.interpolateReds( 0.125))
+    //         .attr('fill', (d,i) => {
+    //           console.log(d,i);
+    //           return d3.interpolateReds( 0.125);
+    //         })
+
+    // this.svg.select('#countries')
+    //         .data(this.countries)
+    //         .attr('fill', (d,i) => {
+    //             console.log("id",d.id);
+    //             let arr=[];
+    //             // iso-code is mapped to id of countries. Just get all the cases in the array using loop. Then get the maximum of that using d3.max
+    //             // d3.interpolateReds( d3.max(d.total_cases_per_million) );
+
+    //           } )
+
+    // this.svg.select("#countries")
+    //         .data(this.globalApplicationState.covidData)
     
     // this.svg.select("#countries")
     //         .selectAll('path')
