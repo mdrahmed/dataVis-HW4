@@ -14,9 +14,9 @@ class MapVis {
 
 
     // adding map
-    console.log("topoJSON: ",this.globalApplicationState.mapData);
+    //console.log("topoJSON: ",this.globalApplicationState.mapData);
     // let geoJSON = topojson.feature(this.globalApplicationState, this.globalApplicationState.mapData);
-    console.log("geo converted to features: ",topojson.feature(this.globalApplicationState.mapData, this.globalApplicationState.mapData.objects.countries).features);
+    //console.log("geo converted to features: ",topojson.feature(this.globalApplicationState.mapData, this.globalApplicationState.mapData.objects.countries).features);
     this.countries = topojson.feature(this.globalApplicationState.mapData, this.globalApplicationState.mapData.objects.countries).features;
     // console.log("covidData: ",this.globalApplicationState.covidData[10000].iso_code);
     // console.log("covidData: ",this.globalApplicationState.covidData[2].iso_code);
@@ -64,22 +64,34 @@ class MapVis {
             //     })
             //   .attr("d", this.path);
 
-            this.svg.select("#graticules")
+    this.svg.select("#graticules")
                     .append("path")
                     .datum(this.graticule.outline)
                     .attr("class", "graticule outline")
                     .attr("d", this.path); 
 
+    // selection
+    // let selected;
+    // this.svg.select("#countries")
+    //         // .selectAll('path')
+    //         // .select(".country")
+    //         .on('click',function() {
+    //             console.log("HEllo",d3.select(this))
+    //             d3.select(".country")
+    //               .attr('stroke','black')
+    //           })
 
     this.svg.select("#countries")
             .selectAll("path")
             .data(this.countries)
+            // .attr("stroke",'red')
             .enter()
               .append("path")
               .attr("class",'country')
               .attr("d",this.path)
+              // .attr("fill",'none')
               .attr("fill",(d,i) => {
-                      console.log(d.id,i);
+                      //console.log(d.id,i);
                       // iso-code is mapped to id of countries. Just get all the cases in the array using loop. Then get the maximum of that using d3.max
                       
                       this.max_cases =  d3.max(  this.globalApplicationState.covidData, (n) => {
@@ -91,15 +103,30 @@ class MapVis {
                         else return 0;
                       }) 
                       // this.max_cases = d3.max( this.globalApplicationState.covidData, (n) => (n.iso_code === d.id) ? parseFloat(n.total_cases_per_million) : null) 
-                      console.log("max_cases: ",this.max_cases);
-                      // console.log(d3.max(arr));
+                      
+                      //console.log("max_cases: ",this.max_cases);
+                      
                       // return this.i(d.color = this.max_cases); 
                       return this.colorScale(this.max_cases);
                       // return this.color(d.color = this.max_cases);
                       // return this.colorS(d.color = this.max_cases);
                       // return this.scaleLin(d.color = this.max_cases);
                     })
+                    // .on('click',function() {
+                    //   d3.select(this)
+                    //     .attr('stroke','black')
+                    // })
+    
+    
 
+    // Clear Button
+    // d3.select("#clear-button")
+    //   .on('click',function () {
+    //     console.log("Hello")
+    //     this.svg.selectAll("#countries")
+    //             .attr('stroke', 'none')
+      
+    // })
             // .enter().insert("path","#graticules")
             //     .attr('class','country')
             //     .attr("d",this.path)
