@@ -20,10 +20,10 @@ class LineChart {
     // this.continents = d3.group(this.continents, d => d.location);
     // console.log(this.continents);
 
-    var covid_data_selected = this.globalApplicationState.covidData.filter(function(d){
+    let covid_data_selected = this.globalApplicationState.covidData.filter(function(d){
       return d.iso_code.includes("OWID")
     });
-    // console.log(covid_data_selected)
+    console.log(covid_data_selected)
     let groupedDataContinents = d3.group(covid_data_selected, (d) => d.location);
     console.log("group data: ",groupedDataContinents)
       // .data(this.globalApplicationState.covidData.filter((d,i) => (d.iso_code.substring(0,4) == "OWID") ? console.log(d.iso_code.substring(0,4)) : null))
@@ -228,23 +228,23 @@ class LineChart {
     return [year, month, day].join('-');
   }
 // console.log(formatDate('Wed May 13 2026 06:25:55 GMT-0600 (Mountain Daylight Time)'))
-
+  // console.log("xAxis",)
   this.lineChart.on('mousemove', (event) => {
-        if (event.clientX > MARGIN.left && event.clientX < innerWidth - MARGIN.right) {
+        if (event.offsetX > MARGIN.left && event.offsetX < innerWidth - MARGIN.right) {
          // Set the line position
         this.lineChart.select('#overlay')
                 .select('line')
                 .attr('stroke', 'black')
-                .attr('x1', event.clientX)
-                .attr('x2', event.clientX)
-                .attr('y1', 400)
+                .attr('x1', event.offsetX)
+                .attr('x2', event.offsetX)
+                .attr('y1', 400 +20)
                 .attr('y2', 0);
                                         
         // Find the relevant data (by date and location)
         // const dateHovered = xScale.invert(event.clientX)
-        const dateHovered = formatDate(xScale.invert(event.clientX))
+        const dateHovered = formatDate(xScale.invert(event.offsetX))
         console.log(dateHovered,typeof(dateHovered))
-        const filteredData = this.globalApplicationState.covidData.filter((row) => row.date === dateHovered)
+        const filteredData = covid_data_selected.filter((row) => row.date === dateHovered)
                                           .sort((rowA, rowB) => rowB.total_cases_per_million - rowA.total_cases_per_million)
         console.log(filteredData)
 
@@ -254,7 +254,7 @@ class LineChart {
                   .join('text')
                     .text(d=>`${d.location}, ${d.total_cases_per_million}`)
                     // .attr('x', condition ? event.clientX : event.clickX)
-                    .attr('x', event.clientX)
+                    .attr('x', event.offsetX)
                     .attr('y', (d, i) => 20*i + 20)
                     .attr('alignment-baseline', 'hanging')
                     .attr('fill', (d) => lineColorScale(d.location));

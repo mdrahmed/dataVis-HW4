@@ -117,7 +117,14 @@ class MapVis {
                     //     .attr('stroke','black')
                     // })
     
-    
+// // gradient
+    // legend = d3.select('#legend')
+    //                 .append('rect')
+    //                 .attr('width', 100)
+    //                 .attr('y', 20)
+    //                 .attr('height', 40)
+    //                 .attr('fill', 'url(#color-gradient)');
+
 
     // Clear Button
     // d3.select("#clear-button")
