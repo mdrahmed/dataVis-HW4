@@ -16,13 +16,14 @@ class LineChart {
 
     // console.log("iso codes: ",this.globalApplicationState.covidData[0].filter( (d,i) => d.iso_code ));
 
-    this.continents = this.globalApplicationState.covidData.filter((d,i) => (d.iso_code.substring(0,4) == "OWID") ? d : null);
-    this.continents = d3.group(this.continents, d => d.location);
-    console.log(this.continents);
+    // this.continents = this.globalApplicationState.covidData.filter((d,i) => (d.iso_code.substring(0,4) == "OWID") ? d : null);
+    // this.continents = d3.group(this.continents, d => d.location);
+    // console.log(this.continents);
 
     var covid_data_selected = this.globalApplicationState.covidData.filter(function(d){
       return d.iso_code.includes("OWID")
     });
+    // console.log(covid_data_selected)
     let groupedDataContinents = d3.group(covid_data_selected, (d) => d.location);
     console.log("group data: ",groupedDataContinents)
       // .data(this.globalApplicationState.covidData.filter((d,i) => (d.iso_code.substring(0,4) == "OWID") ? console.log(d.iso_code.substring(0,4)) : null))
@@ -31,7 +32,7 @@ class LineChart {
         // .attr("width", CHART_WIDTH + MARGIN.left + MARGIN.right)
         // .attr("height", CHART_HEIGHT + MARGIN.top + MARGIN.bottom)
         
-
+    
     // console.log(this.continents.values()[0][0].date)
     // console.log(Array.from(this.continents, (x,i) => {
     //   console.log(x,i)
@@ -50,7 +51,10 @@ class LineChart {
     let maxDate = d3.max(covid_data_selected, function(d){
       return new Date(d.date)
     })
-    console.log(minDate,maxDate)
+    let maxCases = d3.max(covid_data_selected, function(d){
+      return parseFloat(d.total_cases_per_million)
+    })
+    console.log(minDate,maxDate,maxCases)
     // let timeConv = d3.timeParse("%d-%b-%Y");
     // let dates=[];
     // for (let x of this.continents){
@@ -98,24 +102,24 @@ class LineChart {
     // })
 
 /// worked axis
-    let cases=[];
-    for (let x of this.continents){
-      // console.log("ad ",x)
-      let f = 0;
-      for(let i of x){
-        // console.log("i ",i);
-        if(f==1){
-          for(let k in i){
-            // console.log(k,x[i][k].date)
-            // console.log(k,x[1][k].total_cases_per_million);
-            cases.push(x[1][k]);
-            // cases.push(x[1][k])
-          }
-          f=0;
-        }
-        f+=1;
-      }
-    }
+    // let cases=[];
+    // for (let x of this.continents){
+    //   // console.log("ad ",x)
+    //   let f = 0;
+    //   for(let i of x){
+    //     // console.log("i ",i);
+    //     if(f==1){
+    //       for(let k in i){
+    //         // console.log(k,x[i][k].date)
+    //         // console.log(k,x[1][k].total_cases_per_million);
+    //         cases.push(x[1][k]);
+    //         // cases.push(x[1][k])
+    //       }
+    //       f=0;
+    //     }
+    //     f+=1;
+    //   }
+    // }
 
     // // console.log("max: ", d3.max(cases, d => parseFloat(d)));
     this.lineChart = d3.select("#line-chart")
@@ -146,7 +150,8 @@ class LineChart {
     this.yAxis = this.lineChart.select("#y-axis")      
 
     let yScale = d3.scaleLinear()	
-                  .domain([0,d3.max(cases, (d) => parseFloat(d.total_cases_per_million))])
+                  // .domain([0,d3.max(cases, (d) => parseFloat(d.total_cases_per_million))])
+                  .domain([0,maxCases])
                   .range([CHART_HEIGHT, 0])
                   // .range([CHART_HEIGHT-MARGIN.top-MARGIN.bottom, 0])
                   .nice()
@@ -208,40 +213,54 @@ class LineChart {
                                         .y((d) => yScale(d.total_cases_per_million))
                                         (values))
 
+  // formate Date
+  let formatDate =  function (date) {
+    var d = new Date(date),
+        month = '' + (d.getMonth() + 1),
+        day = '' + d.getDate(),
+        year = d.getFullYear();
 
-    // let xAxis = d3.scaleLinear()
-    //     .domain([2016, 2022])
-    //     .range([0,CHART_WIDTH]);
+    if (month.length < 2) 
+        month = '0' + month;
+    if (day.length < 2) 
+        day = '0' + day;
 
-    // this.lineChart.select('#x-axis')
-    //               .attr("transform", "translate(80," + 490 + ")")
-    //               .call(d3.axisBottom(xAxis))
-    
-    // this.lineChart.select('#x-axis')
-    //               .append('text')
-    //               .text('Year')
-    //               .attr('x', 50)
-    //               .attr('y', 50);
+    return [year, month, day].join('-');
+  }
+// console.log(formatDate('Wed May 13 2026 06:25:55 GMT-0600 (Mountain Daylight Time)'))
 
+  this.lineChart.on('mousemove', (event) => {
+        if (event.clientX > MARGIN.left && event.clientX < innerWidth - MARGIN.right) {
+         // Set the line position
+        this.lineChart.select('#overlay')
+                .select('line')
+                .attr('stroke', 'black')
+                .attr('x1', event.clientX)
+                .attr('x2', event.clientX)
+                .attr('y1', 400)
+                .attr('y2', 0);
+                                        
+        // Find the relevant data (by date and location)
+        // const dateHovered = xScale.invert(event.clientX)
+        const dateHovered = formatDate(xScale.invert(event.clientX))
+        console.log(dateHovered,typeof(dateHovered))
+        const filteredData = this.globalApplicationState.covidData.filter((row) => row.date === dateHovered)
+                                          .sort((rowA, rowB) => rowB.total_cases_per_million - rowA.total_cases_per_million)
+        console.log(filteredData)
 
+        this.lineChart.select('#overlay')
+                  .selectAll('text')
+                  .data(filteredData)
+                  .join('text')
+                    .text(d=>`${d.location}, ${d.total_cases_per_million}`)
+                    // .attr('x', condition ? event.clientX : event.clickX)
+                    .attr('x', event.clientX)
+                    .attr('y', (d, i) => 20*i + 20)
+                    .attr('alignment-baseline', 'hanging')
+                    .attr('fill', (d) => lineColorScale(d.location));
+        }
+  });
 
-    // this.yAxis = d3.scaleLinear()	
-    //               .domain([0,1000])
-    //               .range([ 600 - padding.bottom, 10 ])
-
-    // this.lineChart.select('#y-axis')
-    //               .append('g')
-    //               .attr('transform', `translate(${padding.left},0)`)
-    //               .call(d3.axisLeft(this.yAxis));
-              
-    // // Append y axis text
-    // this.lineChart
-    //               .select('#y-axis')
-    //               .append('text')
-    //               .text('Spending')
-    //               .attr('x', -340)
-    //               .attr('y', 20)
-    //               .attr('transform', 'rotate(-90)');
 
 
 
