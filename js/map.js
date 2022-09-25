@@ -81,7 +81,7 @@ class MapVis {
     //               .attr('stroke','black')
     //           })
 
-    this.svg.select("#countries")
+    this.countriesSelected = this.svg.select("#countries")
             .selectAll("path")
             .data(this.countries)
             // .attr("stroke",'red')
@@ -117,6 +117,58 @@ class MapVis {
                     //     .attr('stroke','black')
                     // })
     
+  this.path_country = this.svg.select("#countries")
+                  .selectAll("path")    
+                  .data(this.countries)
+  
+  this.countriesSelected.on('click', function(d) {
+    if(globalApplicationState.selectedLocations.includes(this)){
+      globalApplicationState.selectedLocations.splice(globalApplicationState.selectedLocations.indexOf(this),1);
+      d3.select(this)
+        .attr('class','country')
+      console.log(globalApplicationState.selectedLocations)
+    }
+    else{
+      globalApplicationState.selectedLocations.push(this);
+      d3.select(this)
+        .attr('class','country selected')
+      console.log(globalApplicationState.selectedLocations)
+    }
+  })
+
+  let clearSelection = document.getElementById("clear-button")
+                              .addEventListener("click", function () {
+                                for(let path of globalApplicationState.selectedLocations){
+                                  globalApplicationState.selectedLocations = []
+                                  // console.log('clicked', globalApplicationState.selectedLocations)
+                                  // this.countriesSelected.attr('stroke','none')
+                                  d3.select(path)
+                                    .attr("class","country")
+                                }
+                              })
+  
+  // function clean() {
+  //   for(let path of globalApplicationState.selectedLocations){
+  //     d3.select(path)
+  //       .attr("class","country");
+  //     globalApplicationState.selectedLocations = [];
+  //     // console.log('clicked', globalApplicationState.selectedLocations)
+  //     // this.countriesSelected.attr('stroke','none')
+  //   }
+  // }
+
+  // this.svg.select("#countries")
+  //         .selectAll("path")
+  //         .data(this.countries)
+  //         .attr("d",this.path)
+  //         .on('click',function() {
+  //               d3.select(this)
+  //                 // .select("#country")
+  //                 .attr('class','country selected ')
+  //               console.log(this)  
+  //         })
+
+
 // // gradient
     // legend = d3.select('#legend')
     //                 .append('rect')

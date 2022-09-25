@@ -19,7 +19,13 @@ class LineChart {
     // this.continents = this.globalApplicationState.covidData.filter((d,i) => (d.iso_code.substring(0,4) == "OWID") ? d : null);
     // this.continents = d3.group(this.continents, d => d.location);
     // console.log(this.continents);
+  
+    // if(globalApplicationState.selectedLocations != null){
+    //   this.updateSelectedCountries();
+    // }
+    // else{
 
+    
     let covid_data_selected = this.globalApplicationState.covidData.filter(function(d){
       return d.iso_code.includes("OWID")
     });
@@ -237,8 +243,8 @@ class LineChart {
                 .attr('stroke', 'black')
                 .attr('x1', event.offsetX)
                 .attr('x2', event.offsetX)
-                .attr('y1', 400 +20)
-                .attr('y2', 0);
+                .attr('y1', CHART_HEIGHT +20)
+                .attr('y2', 20);
                                         
         // Find the relevant data (by date and location)
         // const dateHovered = xScale.invert(event.clientX)
@@ -263,10 +269,10 @@ class LineChart {
 
 
 
-
+  // }
   }
 
   updateSelectedCountries () {
-
+    console.log("inside update")
   }
 }
