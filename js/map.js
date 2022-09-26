@@ -23,6 +23,7 @@ class MapVis {
     // console.log("covidData: ",this.globalApplicationState.covidData[3].iso_code);
     // console.log("covidData: ",this.globalApplicationState.covidData[4].iso_code);
     // console.log("covidData: ",this.globalApplicationState.covidData[5].iso_code);
+    console.log(this.globalApplicationState.selectedLocations);
 
     this.path = d3.geoPath().projection(projection);
 
@@ -120,8 +121,10 @@ class MapVis {
   this.path_country = this.svg.select("#countries")
                   .selectAll("path")    
                   .data(this.countries)
-  
+
+// worked for update
   this.countriesSelected.on('click', function(d) {
+    // this.updateSelectedCountries();
     if(globalApplicationState.selectedLocations.includes(this)){
       globalApplicationState.selectedLocations.splice(globalApplicationState.selectedLocations.indexOf(this),1);
       d3.select(this)
@@ -133,16 +136,43 @@ class MapVis {
       d3.select(this)
         .attr('class','country selected')
       console.log(globalApplicationState.selectedLocations)
+      const lineChart = new LineChart(globalApplicationState);
+      globalApplicationState.lineChart = lineChart;
+      // let covid_data_selected = globalApplicationState.selectedLocations.filter(function(d){
+      //   return d.iso_code.includes("OWID")
+      // });
+      // console.log(covid_data_selected)
     }
   })
 
+  // this.countriesSelected.on('click', this.updateSelectedCountries());
+
+  // function update(d){
+  //   if(globalApplicationState.selectedLocations.includes(this)){
+  //     globalApplicationState.selectedLocations.splice(globalApplicationState.selectedLocations.indexOf(this),1);
+  //     d3.select(this)
+  //       .attr('class','country')
+  //     console.log(globalApplicationState.selectedLocations)
+  //   }
+  //   else{
+  //     globalApplicationState.selectedLocations.push(this);
+  //     d3.select(this)
+  //       .attr('class','country selected')
+  //     console.log(globalApplicationState.selectedLocations)
+  //     // let covid_data_selected = this.globalApplicationState.selectedLocations.filter(function(d){
+  //     //   return d.iso_code.includes("OWID")
+  //     // });
+  //     // console.log(covid_data_selected)
+  //   }
+  // }
+
   let clearSelection = document.getElementById("clear-button")
                               .addEventListener("click", function () {
-                                for(let path of globalApplicationState.selectedLocations){
+                                for(let p of globalApplicationState.selectedLocations){
                                   globalApplicationState.selectedLocations = []
                                   // console.log('clicked', globalApplicationState.selectedLocations)
                                   // this.countriesSelected.attr('stroke','none')
-                                  d3.select(path)
+                                  d3.select(p)
                                     .attr("class","country")
                                 }
                               })
@@ -170,12 +200,14 @@ class MapVis {
 
 
 // // gradient
-    // legend = d3.select('#legend')
-    //                 .append('rect')
-    //                 .attr('width', 100)
-    //                 .attr('y', 20)
-    //                 .attr('height', 40)
-    //                 .attr('fill', 'url(#color-gradient)');
+    let legend = d3.select('#legend')
+                    .attr("width",150)
+                    .attr("height",45)
+                    .append('rect')
+                    .attr('width', 150)
+                    .attr('y', 20)
+                    .attr('height', 40)
+                    .attr('fill', 'url(#color-gradient)');
 
 
     // Clear Button
@@ -186,35 +218,7 @@ class MapVis {
     //             .attr('stroke', 'none')
       
     // })
-            // .enter().insert("path","#graticules")
-            //     .attr('class','country')
-            //     .attr("d",this.path)
-            //     .attr('stroke', 'grey')
-            //     .style('fill', (d,i) => {
-            //       console.log(d.id,i);
-            //       // iso-code is mapped to id of countries. Just get all the cases in the array using loop. Then get the maximum of that using d3.max
-            //       let max_cases = 0;
-            //       // this.max_cases = d3.max( this.globalApplicationState.covidData, (n) => {
-            //       //   // (n.iso_code === d.id) ? n.total_cases_per_million : null;
-            //       //   if(n.iso_code === d.id){
-            //       //     // console.log(n.total_cases_per_million);
-            //       //     return n.total_cases_per_million;
-            //       //   }
-            //       //   else return null;
-            //       // }) 
-            //       max_cases = d3.max( this.globalApplicationState.covidData, (n) => (n.iso_code === d.id) ? n.total_cases_per_million : null) 
-            //       console.log("max_cases: ",max_cases);
-            //       // console.log(d3.max(arr));
-            //       return this.colorScale(max_cases);
-            //       // return this.color(d.color = max_cases);
-            //     })
-                // .on('click',function() {
-                //   d3.select(this)
-                //     .attr('stroke','black')
-                // })
-
-
-    // 
+          
 
 // trying a new method
   
@@ -278,6 +282,8 @@ class MapVis {
   }
 
   updateSelectedCountries () {
-
+    // globalApplicationState.lineChart = lineChart;
+    console.log("inside map update")
+    
   }
 }

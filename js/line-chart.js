@@ -20,11 +20,13 @@ class LineChart {
     // this.continents = d3.group(this.continents, d => d.location);
     // console.log(this.continents);
   
-    // if(globalApplicationState.selectedLocations != null){
+    // if(globalApplicationState.selectedLocations.length != 0){
+    //   // this.globalApplicationState.selectedLocations = glo
+    //   // console.log(this.globalApplicationState.selectedLocations);
     //   this.updateSelectedCountries();
     // }
     // else{
-
+    // console.log("selec loc line: ",globalApplicationState.selectedLocations.length);
     
     let covid_data_selected = this.globalApplicationState.covidData.filter(function(d){
       return d.iso_code.includes("OWID")
@@ -60,7 +62,7 @@ class LineChart {
     let maxCases = d3.max(covid_data_selected, function(d){
       return parseFloat(d.total_cases_per_million)
     })
-    console.log(minDate,maxDate,maxCases)
+    console.log(minDate,maxDate,maxCases);
     // let timeConv = d3.timeParse("%d-%b-%Y");
     // let dates=[];
     // for (let x of this.continents){
@@ -273,6 +275,20 @@ class LineChart {
   }
 
   updateSelectedCountries () {
-    console.log("inside update")
+    console.log("inside update line: ",this.globalApplicationState.selectedLocations);
+    let countrySelected;
+    for(let p in globalApplicationState.selectedLocations){
+      // countrySelected = this.globalApplicationState.covidData.filter(function(d){
+      //   return d.iso_code === p.id;
+
+        console.log("cn: ",globalApplicationState.selectedLocations[p]);
+      }
+      // console.log("cn: ",p.id);
+    
+    
+    // console.log("country selected: ",countrySelected);
+
+
+
   }
 }
