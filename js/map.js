@@ -23,7 +23,7 @@ class MapVis {
     // console.log("covidData: ",this.globalApplicationState.covidData[3].iso_code);
     // console.log("covidData: ",this.globalApplicationState.covidData[4].iso_code);
     // console.log("covidData: ",this.globalApplicationState.covidData[5].iso_code);
-    console.log(this.globalApplicationState.selectedLocations);
+    // console.log(this.globalApplicationState.selectedLocations);
 
     this.path = d3.geoPath().projection(projection);
 
@@ -69,7 +69,7 @@ class MapVis {
                     .append("path")
                     .datum(this.graticule.outline)
                     .attr("class", "graticule outline")
-                    .attr("d", this.path); 
+                    .attr("d", this.path);  
 
     // selection
     // let selected;
@@ -122,22 +122,42 @@ class MapVis {
                   .selectAll("path")    
                   .data(this.countries)
 
+  let country_id = [];
 // worked for update
   this.countriesSelected.on('click', function(d) {
     // this.updateSelectedCountries();
-    if(globalApplicationState.selectedLocations.includes(this)){
-      globalApplicationState.selectedLocations.splice(globalApplicationState.selectedLocations.indexOf(this),1);
+    if(globalApplicationState.selectedLocations.includes(this.__data__.id)){
+      let removeIndex = globalApplicationState.selectedLocations.indexOf(this.__data__.id)
+      globalApplicationState.selectedLocations.splice(removeIndex, 1) //Remove by Index
+      // globalApplicationState.selectedLocations.splice(globalApplicationState.selectedLocations.indexOf(this),1);
+      country_id.splice(country_id.indexOf(this.__data__.id),1);
       d3.select(this)
         .attr('class','country')
-      console.log(globalApplicationState.selectedLocations)
+      console.log("selLoc removed: ",globalApplicationState.selectedLocations)
+      console.log("country id removed: ",country_id)
+      d3.select("#lines").selectAll("g").remove()
+      d3.select("#y-axis").selectAll('g').remove()
+      d3.select("#x-axis").selectAll('g').remove()  
+      new LineChart(globalApplicationState);
     }
     else{
-      globalApplicationState.selectedLocations.push(this);
+      // console.log("country selected: ",this.__data__.id)
+      globalApplicationState.selectedLocations.push(this.__data__.id);
+      // globalApplicationState.selectedLocations.push(this);
+      country_id.push(this.__data__.id);
+      console.log("country id: ",country_id)
       d3.select(this)
         .attr('class','country selected')
-      console.log(globalApplicationState.selectedLocations)
-      const lineChart = new LineChart(globalApplicationState);
-      globalApplicationState.lineChart = lineChart;
+      console.log("selectedLocations",globalApplicationState.selectedLocations)
+
+      // let covid_selected = globalApplicationState.lineChart.updateSelectedCountries(country_id);
+
+      // console.log("inside map: ",covid_selected);
+      console.log("inside map: ",globalApplicationState);
+
+      new LineChart(globalApplicationState);
+      // const lineChart = new LineChart(globalApplicationState);
+      // globalApplicationState.lineChart = lineChart;
       // let covid_data_selected = globalApplicationState.selectedLocations.filter(function(d){
       //   return d.iso_code.includes("OWID")
       // });
@@ -168,13 +188,24 @@ class MapVis {
 
   let clearSelection = document.getElementById("clear-button")
                               .addEventListener("click", function () {
-                                for(let p of globalApplicationState.selectedLocations){
-                                  globalApplicationState.selectedLocations = []
-                                  // console.log('clicked', globalApplicationState.selectedLocations)
-                                  // this.countriesSelected.attr('stroke','none')
-                                  d3.select(p)
-                                    .attr("class","country")
-                                }
+                                // for(let p of globalApplicationState.selectedLocations){
+                                //   globalApplicationState.selectedLocations = []
+                                //   country_id = []
+                                //   // console.log('clicked', globalApplicationState.selectedLocations)
+                                //   // this.countriesSelected.attr('stroke','none')
+                                //   console.log("path:",p)
+                                //   d3.select(p)
+                                //     .attr("class","country")
+                                // }
+                                d3.select("#lines").selectAll("g").remove()
+                                d3.select("#y-axis").selectAll('g').remove()
+                                d3.select("#x-axis").selectAll('g').remove()
+                                globalApplicationState.selectedLocations = []
+                                new LineChart(globalApplicationState);
+
+                                d3.select('#countries').selectAll("path")
+                                // .style("stroke", "black").style("stroke-width", 1).style("stroke-opacity", 0.1)
+                                                  .attr('class','country')
                               })
   
   // function clean() {

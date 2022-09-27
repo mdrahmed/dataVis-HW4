@@ -23,17 +23,40 @@ class LineChart {
     // if(globalApplicationState.selectedLocations.length != 0){
     //   // this.globalApplicationState.selectedLocations = glo
     //   // console.log(this.globalApplicationState.selectedLocations);
+    //   console.log("selected now");
     //   this.updateSelectedCountries();
     // }
     // else{
     // console.log("selec loc line: ",globalApplicationState.selectedLocations.length);
     
-    let covid_data_selected = this.globalApplicationState.covidData.filter(function(d){
-      return d.iso_code.includes("OWID")
-    });
-    console.log(covid_data_selected)
+    // if(this.globalApplicationState.selectedLocations.length)
+    
+    let covid_data_selected;
+    
+    var selectedLocation = globalApplicationState.selectedLocations
+    console.log(globalApplicationState.selectedLocations);
+    if(selectedLocation.length != 0){ // if there is no selection
+      covid_data_selected = this.updateSelectedCountries()
+      console.log("covid selected line: ",covid_data_selected);
+
+      d3.select("#lines").selectAll("g").remove()
+    d3.select("#y-axis").selectAll('g').remove()
+    d3.select("#x-axis").selectAll('g').remove()
+    }
+    else{
+      covid_data_selected= this.globalApplicationState.covidData.filter(function(d){
+        return d.iso_code.includes("OWID")
+      });
+    }
+
+    // covid_data_selected= this.globalApplicationState.covidData.filter(function(d){
+    //   return d.iso_code.includes("OWID")
+    // });
+    console.log("type of covid: ",typeof(covid_data_selected))
     let groupedDataContinents = d3.group(covid_data_selected, (d) => d.location);
     console.log("group data: ",groupedDataContinents)
+
+
       // .data(this.globalApplicationState.covidData.filter((d,i) => (d.iso_code.substring(0,4) == "OWID") ? console.log(d.iso_code.substring(0,4)) : null))
       // .data(this.globalApplicationState.covidData.filter((d,i) => (d.iso_code.substring(0,4) == "OWID") ? d : null))
         //  .attr("")
@@ -250,15 +273,16 @@ class LineChart {
                                         
         // Find the relevant data (by date and location)
         // const dateHovered = xScale.invert(event.clientX)
-        const dateHovered = formatDate(xScale.invert(event.offsetX))
-        console.log(dateHovered,typeof(dateHovered))
-        const filteredData = covid_data_selected.filter((row) => row.date === dateHovered)
+        this.dateHovered = formatDate(xScale.invert(event.offsetX))
+        console.log(this.dateHovered,typeof(this.dateHovered))
+        const filteredData = covid_data_selected.filter((row) => row.date === this.dateHovered)
                                           .sort((rowA, rowB) => rowB.total_cases_per_million - rowA.total_cases_per_million)
         console.log(filteredData)
 
         this.lineChart.select('#overlay')
                   .selectAll('text')
                   .data(filteredData)
+                  // .data(this.globalApplicationState.covidData)
                   .join('text')
                     .text(d=>`${d.location}, ${d.total_cases_per_million}`)
                     // .attr('x', condition ? event.clientX : event.clickX)
@@ -274,16 +298,117 @@ class LineChart {
   // }
   }
 
+  // updateSelectedCountries (country_id) {
   updateSelectedCountries () {
-    console.log("inside update line: ",this.globalApplicationState.selectedLocations);
-    let countrySelected;
-    for(let p in globalApplicationState.selectedLocations){
-      // countrySelected = this.globalApplicationState.covidData.filter(function(d){
-      //   return d.iso_code === p.id;
+    // console.log("inside update line: ",this.globalApplicationState.selectedLocations[0].__data__.id);
+    // console.log("selected update line");
+    // console.log("In lineChart: ",globalApplicationState.selectedLocations[0].__data__.id)
+    // this.globalApplicationState.selectedLocations.forEach((el,in) => console.log("each: ", el[in].__data__))
+    // this.globalApplicationState.selectedLocations.forEach( function(el, in) {
+    //   console.log("each: ", el[in].__data__)
+    // })
+    // for(let i in this.globalApplicationState.selectedLocations){
+    //   console.log(this.globalApplicationState.selectedLocations[i].__data__.id)
+    // }
+    // this.globalApplicationState.selectedLocations.filter((d) => console.log("data:",d));
+    // console.log(country_id)
+    let countrySelected_CovidData;
+    // countrySelected_CovidData = this.globalApplicationState.covidData.filter(function(d){
+    //   return d.iso_code.includes("AFG") && d.iso_code.includes("RUS")
+    // });
+      // console.log(i);
+    
+    // countrySelected_CovidData = this.globalApplicationState.covidData.filter(item => {
+    //   return this.globalApplicationState.selectedLocations.includes(item.iso_code)
+    // })
 
-        console.log("cn: ",globalApplicationState.selectedLocations[p]);
-      }
+    // countrySelected_CovidData = this.globalApplicationState.covidData.filter(item => {
+    //   return country_id.includes(item.iso_code)
+    // })
+
+    // let selectedLocation = 
+    countrySelected_CovidData = this.globalApplicationState.covidData.filter(item => {
+      return this.globalApplicationState.selectedLocations.includes(item.iso_code)
+    })
+
+    // for(let i in this.globalApplicationState.selectedLocations){
+    //   this.globalApplicationState.covidData.filter(function(d){
+    //         if(d.iso_code === this.globalApplicationState.selectedLocations[i].__data__.id){
+    //           // console.log(d)
+    //           countrySelected_CovidData.push(d)
+    //         }
+    //       })
+    //   }
+
+    console.log(countrySelected_CovidData);
+    return countrySelected_CovidData;
+    // let maxCases = d3.max(countrySelected_CovidData, function(d){
+    //   return parseFloat(d.total_cases_per_million)
+    // })
+  
+    // const selectedData_covid = this.updateSelectedCountries(globalApplicationState)
+
+    // d3.select("#lines").selectAll("g").remove()
+    // d3.select("#y-axis").selectAll('g').remove()
+    // d3.select("#x-axis").selectAll('g').remove()
+
+    // let yScale = d3.scaleLinear()	
+    //                 // .domain([0,d3.max(cases, (d) => parseFloat(d.total_cases_per_million))])
+    //                 .domain([0,maxCases])
+    //                 .range([CHART_HEIGHT, 0])
+    //                 // .range([CHART_HEIGHT-MARGIN.top-MARGIN.bottom, 0])
+    //                 // .nice()
+                    
+    // console.log(maxCases);
+  
+    // // this.lineChart = d3.select("#line-chart")
+    // // this.yAxis = this.lineChart.select("#y-axis")     
+    // // this.yAxis.append("g")
+    // this.yAxis.selectAll("#axis-y")
+    //           // .selectAll("#tick")
+    //                 // .attr('transform', `translate(${MARGIN.left}, ${MARGIN.top})`)
+    //                 // .attr('transform','translate(20,20)')
+    //                 .call(d3.axisLeft(yScale))
+  
+    // this.yAxis.append('text')
+    //                 .text('cases per million')
+    //                 .attr('x', -250)
+    //                 .attr('y', 20)
+    //                 .attr('transform', 'rotate(-90)');
+
+
+// worked a little bit    
+    // for(let i of this.globalApplicationState.selectedLocations){
+    //   // let s = this.globalApplicationState.selectedLocations[0];
+    //   countrySelected_CovidData = this.globalApplicationState.covidData.filter(function(d){
+    //     return d.iso_code.includes(i)
+    //   });
+    //   // console.log(countrySelected_CovidData);
+    //   console.log(countrySelected_CovidData);
+
+    //   
+
+
+//  not worked    
+    // console.log(countrySelected_CovidData);
+    // for(let i of this.globalApplicationState.selectedLocations){
+    //   console.log(i);
+    //   this.globalApplicationState.covidData.filter(function(d){
+    //     let dd = d.iso_code.includes(i);
+    //     console.log(dd)
+    //     // countrySelected_CovidData.push(d.iso_code.includes(i));
+    //   })
+    // }
+
+    // console.log(countrySelected_CovidData)
+    // for(let p in globalApplicationState.selectedLocations){
+    //   // countrySelected = this.globalApplicationState.covidData.filter(function(d){
+    //   //   return d.iso_code === p.id;
+
+    //     console.log("cn: ",globalApplicationState.selectedLocations[p]);
+    //   }
       // console.log("cn: ",p.id);
+    
     
     
     // console.log("country selected: ",countrySelected);
