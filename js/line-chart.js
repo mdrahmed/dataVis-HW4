@@ -30,30 +30,37 @@ class LineChart {
     // console.log("selec loc line: ",globalApplicationState.selectedLocations.length);
     
     // if(this.globalApplicationState.selectedLocations.length)
-    
-    let covid_data_selected;
+
+    // date code
+    // this.globalApplicationState.covidData.forEach(d => console.log("covid:",d));
+    // const dates = this.continents.map((row) => )
+    const dates = this.globalApplicationState.covidData.map((row) => new Date(row.date))
+    // const dates = groupedDataContin.map((row) => new Date(row.date))
+    console.log("dates: ",dates)
+
+    let OWID_data_selected;
     
     var selectedLocation = globalApplicationState.selectedLocations
     console.log(globalApplicationState.selectedLocations);
     if(selectedLocation.length != 0){ // if there is selection
-      covid_data_selected = this.updateSelectedCountries()
-      console.log("covid selected line: ",covid_data_selected);
+      OWID_data_selected = this.updateSelectedCountries()
+      console.log("covid selected line: ",OWID_data_selected);
 
       d3.select("#lines").selectAll("g").remove()
       d3.select("#y-axis").selectAll('g').remove()
       d3.select("#x-axis").selectAll('g').remove()
     }
     else{
-      covid_data_selected= this.globalApplicationState.covidData.filter(function(d){
+      OWID_data_selected= this.globalApplicationState.covidData.filter(function(d){
         return d.iso_code.includes("OWID")
       });
     }
 
-    // covid_data_selected= this.globalApplicationState.covidData.filter(function(d){
+    // OWID_data_selected= this.globalApplicationState.covidData.filter(function(d){
     //   return d.iso_code.includes("OWID")
     // });
-    console.log("type of covid: ",typeof(covid_data_selected))
-    let groupedDataContinents = d3.group(covid_data_selected, (d) => d.location);
+    console.log("type of covid: ",typeof(OWID_data_selected))
+    let groupedDataContinents = d3.group(OWID_data_selected, (d) => d.location);
     console.log("group data: ",groupedDataContinents)
 
 
@@ -76,13 +83,22 @@ class LineChart {
     // // const dates = groupedDataContin.map((row) => new Date(row.date))
     // console.log("date: ",dates)
 
-    let minDate = d3.min(covid_data_selected, function(d){
-      return new Date(d.date)
-    })
-    let maxDate = d3.max(covid_data_selected, function(d){
-      return new Date(d.date)
-    })
-    let maxCases = d3.max(covid_data_selected, function(d){
+    // let minDate = d3.min(OWID_data_selected, function(d){
+    //   return new Date(d.date)
+    // })
+    // let maxDate = d3.max(OWID_data_selected, function(d){
+    //   return new Date(d.date)
+    // })
+    // let maxCases = d3.max(OWID_data_selected, function(d){
+    //   return parseFloat(d.total_cases_per_million)
+    // })
+    // console.log(minDate,maxDate,maxCases);
+
+
+// Min and max date from dates,
+    let minDate = d3.min(dates)
+    let maxDate = d3.max(dates)
+    let maxCases = d3.max(OWID_data_selected, function(d){
       return parseFloat(d.total_cases_per_million)
     })
     console.log(minDate,maxDate,maxCases);
@@ -280,9 +296,9 @@ class LineChart {
         // const dateHovered = xScale.invert(event.clientX)
         this.dateHovered = formatDate(xScale.invert(event.offsetX))
         console.log(this.dateHovered,typeof(this.dateHovered))
-        const filteredData = covid_data_selected.filter((row) => row.date === this.dateHovered)
+        const filteredData = OWID_data_selected.filter((row) => row.date === this.dateHovered)
                                           .sort((rowA, rowB) => rowB.total_cases_per_million - rowA.total_cases_per_million)
-       console.log(filteredData)
+        console.log(filteredData)
         
         this.lineChart.select('#overlay')
                   .selectAll('text')

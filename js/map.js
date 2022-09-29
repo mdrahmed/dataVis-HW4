@@ -123,51 +123,54 @@ class MapVis {
   //                 .data(this.countries)
 
   let country_id = [];
+  let update = this;
 // worked for update
   this.countriesSelected.on('click', function(d) {
-    // this.updateSelectedCountries();
-    if(globalApplicationState.selectedLocations.includes(this.__data__.id)){
-      let removeIndex = globalApplicationState.selectedLocations.indexOf(this.__data__.id)
-      globalApplicationState.selectedLocations.splice(removeIndex, 1) //Remove by Index
-      // globalApplicationState.selectedLocations.splice(globalApplicationState.selectedLocations.indexOf(this),1);
-      country_id.splice(country_id.indexOf(this.__data__.id),1);
-      d3.select(this)
-        .attr('class','country')
-      console.log("selLoc removed: ",globalApplicationState.selectedLocations)
-      console.log("country id removed: ",country_id)
-      d3.select("#lines").selectAll("g").remove()
-      d3.select("#y-axis").selectAll('g').remove()
-      d3.select("#x-axis").selectAll('g').remove()  
-      d3.select("#overlay").selectAll('line').attr('stroke', 'none')
-      d3.select("#overlay").selectAll('text').remove()
-      // d3.select("#overlay").remove()
-      new LineChart(globalApplicationState);
-    }
-    else{
-      // console.log("country selected: ",this.__data__.id)
-      globalApplicationState.selectedLocations.push(this.__data__.id);
-      // globalApplicationState.selectedLocations.push(this);
-      country_id.push(this.__data__.id);
-      console.log("country id: ",country_id)
-      d3.select(this)
-        .attr('class','country selected')
-      console.log("selectedLocations",globalApplicationState.selectedLocations)
-      d3.select("#overlay").selectAll('line').attr('stroke', 'none')
-      d3.select("#overlay").selectAll('text').remove()
+    // // this.updateSelectedCountries();
+    update.updateSelectedCountries(this);
+    // if(globalApplicationState.selectedLocations.includes(this.__data__.id)){
+    //   let removeIndex = globalApplicationState.selectedLocations.indexOf(this.__data__.id)
+    //   globalApplicationState.selectedLocations.splice(removeIndex, 1) //Remove by Index
+    //   // globalApplicationState.selectedLocations.splice(globalApplicationState.selectedLocations.indexOf(this),1);
+    //   country_id.splice(country_id.indexOf(this.__data__.id),1);
+    //   d3.select(this)
+    //     .attr('class','country')
+    //   console.log("selLoc removed: ",globalApplicationState.selectedLocations)
+    //   console.log("country id removed: ",country_id)
+    //   d3.select("#lines").selectAll("g").remove()
+    //   d3.select("#y-axis").selectAll('g').remove()
+    //   d3.select("#x-axis").selectAll('g').remove()  
+    //   d3.select("#overlay").selectAll('line').attr('stroke', 'none')
+    //   d3.select("#overlay").selectAll('text').remove()
+    //   update.updateSelectedCountries();
+    //   // d3.select("#overlay").remove()
+    //   new LineChart(globalApplicationState);
+    // }
+    // else{
+    //   // console.log("country selected: ",this.__data__.id)
+    //   globalApplicationState.selectedLocations.push(this.__data__.id);
+    //   // globalApplicationState.selectedLocations.push(this);
+    //   country_id.push(this.__data__.id);
+    //   console.log("country id: ",country_id)
+    //   d3.select(this)
+    //     .attr('class','country selected')
+    //   console.log("selectedLocations",globalApplicationState.selectedLocations)
+    //   d3.select("#overlay").selectAll('line').attr('stroke', 'none')
+    //   d3.select("#overlay").selectAll('text').remove()
 
-      // let covid_selected = globalApplicationState.lineChart.updateSelectedCountries(country_id);
+    //   // let covid_selected = globalApplicationState.lineChart.updateSelectedCountries(country_id);
 
-      // console.log("inside map: ",covid_selected);
-      console.log("inside map: ",globalApplicationState);
+    //   // console.log("inside map: ",covid_selected);
+    //   console.log("inside map: ",globalApplicationState);
 
-      new LineChart(globalApplicationState);
-      // const lineChart = new LineChart(globalApplicationState);
-      // globalApplicationState.lineChart = lineChart;
-      // let covid_data_selected = globalApplicationState.selectedLocations.filter(function(d){
-      //   return d.iso_code.includes("OWID")
-      // });
-      // console.log(covid_data_selected)
-    }
+    //   new LineChart(globalApplicationState);
+    //   // const lineChart = new LineChart(globalApplicationState);
+    //   // globalApplicationState.lineChart = lineChart;
+    //   // let covid_data_selected = globalApplicationState.selectedLocations.filter(function(d){
+    //   //   return d.iso_code.includes("OWID")
+    //   // });
+    //   // console.log(covid_data_selected)
+    // }
   })
 
   // this.countriesSelected.on('click', this.updateSelectedCountries());
@@ -330,9 +333,54 @@ class MapVis {
 
   }
 
-  updateSelectedCountries () {
+  updateSelectedCountries (data) {
     // globalApplicationState.lineChart = lineChart;
+    let country_id = [];
     console.log("inside map update")
+
+    if(globalApplicationState.selectedLocations.includes(data.__data__.id)){
+      let removeIndex = globalApplicationState.selectedLocations.indexOf(data.__data__.id)
+      globalApplicationState.selectedLocations.splice(removeIndex, 1) //Remove by Index
+      // globalApplicationState.selectedLocations.splice(globalApplicationState.selectedLocations.indexOf(data),1);
+      country_id.splice(country_id.indexOf(data.__data__.id),1);
+      d3.select(data)
+        .attr('class','country')
+      console.log("selLoc removed: ",globalApplicationState.selectedLocations)
+      console.log("country id removed: ",country_id)
+      d3.select("#lines").selectAll("g").remove()
+      d3.select("#y-axis").selectAll('g').remove()
+      d3.select("#x-axis").selectAll('g').remove()  
+      d3.select("#overlay").selectAll('line').attr('stroke', 'none')
+      d3.select("#overlay").selectAll('text').remove()
+      // update.updateSelectedCountries();
+      // d3.select("#overlay").remove()
+      new LineChart(globalApplicationState);
+    }
+    else{
+      // console.log("country selected: ",data.__data__.id)
+      globalApplicationState.selectedLocations.push(data.__data__.id);
+      // globalApplicationState.selectedLocations.push(data);
+      country_id.push(data.__data__.id);
+      console.log("country id: ",country_id)
+      d3.select(data)
+        .attr('class','country selected')
+      console.log("selectedLocations",globalApplicationState.selectedLocations)
+      d3.select("#overlay").selectAll('line').attr('stroke', 'none')
+      d3.select("#overlay").selectAll('text').remove()
+
+      // let covid_selected = globalApplicationState.lineChart.updateSelectedCountries(country_id);
+
+      // console.log("inside map: ",covid_selected);
+      console.log("inside map: ",globalApplicationState);
+
+      new LineChart(globalApplicationState);
+      // const lineChart = new LineChart(globalApplicationState);
+      // globalApplicationState.lineChart = lineChart;
+      // let covid_data_selected = globalApplicationState.selectedLocations.filter(function(d){
+      //   return d.iso_code.includes("OWID")
+      // });
+      // console.log(covid_data_selected)
+    }
     
   }
 }
