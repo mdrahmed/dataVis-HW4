@@ -35,13 +35,13 @@ class LineChart {
     
     var selectedLocation = globalApplicationState.selectedLocations
     console.log(globalApplicationState.selectedLocations);
-    if(selectedLocation.length != 0){ // if there is no selection
+    if(selectedLocation.length != 0){ // if there is selection
       covid_data_selected = this.updateSelectedCountries()
       console.log("covid selected line: ",covid_data_selected);
 
       d3.select("#lines").selectAll("g").remove()
-    d3.select("#y-axis").selectAll('g').remove()
-    d3.select("#x-axis").selectAll('g').remove()
+      d3.select("#y-axis").selectAll('g').remove()
+      d3.select("#x-axis").selectAll('g').remove()
     }
     else{
       covid_data_selected= this.globalApplicationState.covidData.filter(function(d){
@@ -154,6 +154,8 @@ class LineChart {
 
     // // console.log("max: ", d3.max(cases, d => parseFloat(d)));
     this.lineChart = d3.select("#line-chart")
+                        // .attr('width',CHART_WIDTH)
+                        // .attr('height',CHART_HEIGHT)
     this.xAxis = this.lineChart.select("#x-axis")
           .attr("transform", "translate(" + MARGIN.left + "," + MARGIN.top + ")");
 
@@ -261,8 +263,11 @@ class LineChart {
 // console.log(formatDate('Wed May 13 2026 06:25:55 GMT-0600 (Mountain Daylight Time)'))
   // console.log("xAxis",)
   this.lineChart.on('mousemove', (event) => {
+        //console.log("before ");
+        console.log("client: ",event.clientX,"offset: ",event.offsetX)
         if (event.offsetX > MARGIN.left && event.offsetX < innerWidth - MARGIN.right) {
          // Set the line position
+         //console.log("after")
         this.lineChart.select('#overlay')
                 .select('line')
                 .attr('stroke', 'black')
@@ -277,20 +282,33 @@ class LineChart {
         console.log(this.dateHovered,typeof(this.dateHovered))
         const filteredData = covid_data_selected.filter((row) => row.date === this.dateHovered)
                                           .sort((rowA, rowB) => rowB.total_cases_per_million - rowA.total_cases_per_million)
-        console.log(filteredData)
-
+       console.log(filteredData)
+        
         this.lineChart.select('#overlay')
                   .selectAll('text')
                   .data(filteredData)
                   // .data(this.globalApplicationState.covidData)
                   .join('text')
-                    .text(d=>`${d.location}, ${d.total_cases_per_million}`)
+                    .text(d=>`${d.location}, ${d3.format(".2s")(d.total_cases_per_million)}`)
                     // .attr('x', condition ? event.clientX : event.clickX)
-                    .attr('x', event.offsetX)
+                    // .attr('x', event.offsetX)
+                    .attr('x', function (d){
+                      // console.log("date hovered: ",typeof(d.date)) 
+                      // middle date - 2021-10-19
+                      console.log("offset:",event.offsetX);
+                      const middle_date = new Date("2021-10-19")
+                      let curr_date = new Date(d.date)
+                      if(curr_date < middle_date){
+                        return event.offsetX;
+                      }
+                      return event.offsetX-150;
+                    })
                     .attr('y', (d, i) => 20*i + 20)
                     .attr('alignment-baseline', 'hanging')
                     .attr('fill', (d) => lineColorScale(d.location));
+                    
         }
+        
   });
 
 

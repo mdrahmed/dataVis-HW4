@@ -118,9 +118,9 @@ class MapVis {
                     //     .attr('stroke','black')
                     // })
     
-  this.path_country = this.svg.select("#countries")
-                  .selectAll("path")    
-                  .data(this.countries)
+  // this.path_country = this.svg.select("#countries")
+  //                 .selectAll("path")    
+  //                 .data(this.countries)
 
   let country_id = [];
 // worked for update
@@ -138,6 +138,9 @@ class MapVis {
       d3.select("#lines").selectAll("g").remove()
       d3.select("#y-axis").selectAll('g').remove()
       d3.select("#x-axis").selectAll('g').remove()  
+      d3.select("#overlay").selectAll('line').attr('stroke', 'none')
+      d3.select("#overlay").selectAll('text').remove()
+      // d3.select("#overlay").remove()
       new LineChart(globalApplicationState);
     }
     else{
@@ -149,6 +152,8 @@ class MapVis {
       d3.select(this)
         .attr('class','country selected')
       console.log("selectedLocations",globalApplicationState.selectedLocations)
+      d3.select("#overlay").selectAll('line').attr('stroke', 'none')
+      d3.select("#overlay").selectAll('text').remove()
 
       // let covid_selected = globalApplicationState.lineChart.updateSelectedCountries(country_id);
 
@@ -200,6 +205,8 @@ class MapVis {
                                 d3.select("#lines").selectAll("g").remove()
                                 d3.select("#y-axis").selectAll('g').remove()
                                 d3.select("#x-axis").selectAll('g').remove()
+                                d3.select("#overlay").selectAll('line').attr('stroke', 'none')
+                                d3.select("#overlay").selectAll('text').remove()
                                 globalApplicationState.selectedLocations = []
                                 new LineChart(globalApplicationState);
 
@@ -238,7 +245,18 @@ class MapVis {
                     .attr('width', 150)
                     .attr('y', 20)
                     .attr('height', 40)
-                    .attr('fill', 'url(#color-gradient)');
+                    .attr('fill', 'url(#color-gradient)')
+    d3.select('#legend')
+      .append('text')
+          .attr('x',0)
+          .attr('y',19)
+          .text('0')
+    
+    d3.select('#legend')
+      .append('text')
+      .attr('x',110)
+      .attr('y',19)
+      .text(d3.format("~s")(660000))
 
 
     // Clear Button
