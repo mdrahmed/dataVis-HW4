@@ -34,15 +34,22 @@ class LineChart {
     // date code
     // this.globalApplicationState.covidData.forEach(d => console.log("covid:",d));
     // const dates = this.continents.map((row) => )
-    const dates = this.globalApplicationState.covidData.map((row) => new Date(row.date))
+    const dates = this.globalApplicationState.covidData.map((row) => 
+    {
+      // if(row.iso_code === "ARG"){
+      //   console.log(row.iso_code, row.date)
+      // }
+      return new Date(row.date)
+    })
     // const dates = groupedDataContin.map((row) => new Date(row.date))
     console.log("dates: ",dates)
 
     let OWID_data_selected;
     
-    let selectedLocation = globalApplicationState.selectedLocations
-    console.log(globalApplicationState.selectedLocations);
-    if(selectedLocation.length != 0){ // if there is selection
+    // let selectedLocation = globalApplicationState.selectedLocations
+    // console.log(globalApplicationState.selectedLocations);
+    // if(selectedLocation.length != 0){ 
+    if(this.globalApplicationState.selectedLocations != 0){ // if there is selection
       OWID_data_selected = this.updateSelectedCountries()
       console.log("covid selected line: ",OWID_data_selected);
 
@@ -83,25 +90,27 @@ class LineChart {
     // // const dates = groupedDataContin.map((row) => new Date(row.date))
     // console.log("date: ",dates)
 
-    // let minDate = d3.min(OWID_data_selected, function(d){
-    //   return new Date(d.date)
-    // })
-    // let maxDate = d3.max(OWID_data_selected, function(d){
-    //   return new Date(d.date)
-    // })
-    // let maxCases = d3.max(OWID_data_selected, function(d){
-    //   return parseFloat(d.total_cases_per_million)
-    // })
-    // console.log(minDate,maxDate,maxCases);
-
-
-// Min and max date from dates,
-    let minDate = d3.min(dates)
-    let maxDate = d3.max(dates)
+// min and max date from owid data
+    let minDate = d3.min(OWID_data_selected, function(d){
+      return new Date(d.date)
+    })
+    let maxDate = d3.max(OWID_data_selected, function(d){
+      return new Date(d.date)
+    })
     let maxCases = d3.max(OWID_data_selected, function(d){
       return parseFloat(d.total_cases_per_million)
     })
     console.log(minDate,maxDate,maxCases);
+
+
+// Min and max date from dates,
+    // let minDate = d3.min(dates)
+    // // let minDate = new Date("2020-01-01")
+    // let maxDate = d3.max(dates)
+    // let maxCases = d3.max(OWID_data_selected, function(d){
+    //   return parseFloat(d.total_cases_per_million)
+    // })
+    // console.log("min date: ",minDate,"max date: ",maxDate,maxCases);
     // let timeConv = d3.timeParse("%d-%b-%Y");
     // let dates=[];
     // for (let x of this.continents){
@@ -276,13 +285,15 @@ class LineChart {
 
     return [year, month, day].join('-');
   }
-// console.log(formatDate('Wed May 13 2026 06:25:55 GMT-0600 (Mountain Daylight Time)'))
+  // console.log(formatDate('Wed May 13 2026 06:25:55 GMT-0600 (Mountain Daylight Time)'))
   // console.log("xAxis",)
   this.lineChart.on('mousemove', (event) => {
         //console.log("before ");
-        console.log("client: ",event.clientX,"offset: ",event.offsetX)
-        console.log("innerwidth: ",innerWidth)
-        if (event.offsetX > MARGIN.left && event.offsetX < innerWidth - MARGIN.right) {
+        console.log("innerwidth: ",innerWidth,"offset: ",event.offsetX)
+        // console.log("innerwidth: ",innerWidth)
+        // if (event.offsetX > MARGIN.left && event.offsetX < innerWidth - MARGIN.right) {
+        // working from april
+        if (event.offsetX > MARGIN.left && event.offsetX < 581 ) {
          // Set the line position
          // console.log("after")
         this.lineChart.select('#overlay')
@@ -295,8 +306,12 @@ class LineChart {
         
         // Find the relevant data (by date and location)
         // const dateHovered = xScale.invert(event.clientX)
-        this.dateHovered = formatDate(xScale.invert(event.offsetX))
-        console.log(this.dateHovered,typeof(this.dateHovered))
+        // let xPosition = xScale.invert(d3.mouse(this)[0])
+        // console.log(xPosition)
+        // working from april
+        this.dateHovered = formatDate(xScale.invert(event.offsetX-80))
+        // this.dateHovered = (xScale.invert(event.offsetX)).toISOString().substring(0,10)
+        console.log("date: ",this.dateHovered)
         const filteredData = OWID_data_selected.filter((row) => row.date === this.dateHovered)
                                           .sort((rowA, rowB) => rowB.total_cases_per_million - rowA.total_cases_per_million)
         console.log(filteredData)
