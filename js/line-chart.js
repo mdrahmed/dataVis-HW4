@@ -40,7 +40,7 @@ class LineChart {
 
     let OWID_data_selected;
     
-    var selectedLocation = globalApplicationState.selectedLocations
+    let selectedLocation = globalApplicationState.selectedLocations
     console.log(globalApplicationState.selectedLocations);
     if(selectedLocation.length != 0){ // if there is selection
       OWID_data_selected = this.updateSelectedCountries()
@@ -264,7 +264,7 @@ class LineChart {
 
   // formate Date
   let formatDate =  function (date) {
-    var d = new Date(date),
+    let d = new Date(date),
         month = '' + (d.getMonth() + 1),
         day = '' + d.getDate(),
         year = d.getFullYear();
@@ -281,9 +281,10 @@ class LineChart {
   this.lineChart.on('mousemove', (event) => {
         //console.log("before ");
         console.log("client: ",event.clientX,"offset: ",event.offsetX)
+        console.log("innerwidth: ",innerWidth)
         if (event.offsetX > MARGIN.left && event.offsetX < innerWidth - MARGIN.right) {
          // Set the line position
-         //console.log("after")
+         // console.log("after")
         this.lineChart.select('#overlay')
                 .select('line')
                 .attr('stroke', 'black')
@@ -291,7 +292,7 @@ class LineChart {
                 .attr('x2', event.offsetX)
                 .attr('y1', CHART_HEIGHT +20)
                 .attr('y2', 20);
-                                        
+        
         // Find the relevant data (by date and location)
         // const dateHovered = xScale.invert(event.clientX)
         this.dateHovered = formatDate(xScale.invert(event.offsetX))

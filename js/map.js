@@ -55,7 +55,7 @@ class MapVis {
             // .enter().append("path")
             //   .attr("class", "graticule line")
             //   .attr("id", function(d) {
-            //     var c = d.coordinates;
+            //     let c = d.coordinates;
             //     if (c[0][0] === c[1][0]) {
             //       return (c[0][0] < 0) ? -c[0][0] + "W" : +c[0][0] + "E";
             //     }
@@ -352,7 +352,6 @@ class MapVis {
       d3.select("#x-axis").selectAll('g').remove()  
       d3.select("#overlay").selectAll('line').attr('stroke', 'none')
       d3.select("#overlay").selectAll('text').remove()
-      // update.updateSelectedCountries();
       // d3.select("#overlay").remove()
       new LineChart(globalApplicationState);
     }
