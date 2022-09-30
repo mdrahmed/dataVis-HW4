@@ -42,7 +42,7 @@ class LineChart {
       return new Date(row.date)
     })
     // const dates = groupedDataContin.map((row) => new Date(row.date))
-    console.log("dates: ",dates)
+    //console.log("dates: ",dates)
 
     let OWID_data_selected;
     
@@ -58,7 +58,7 @@ class LineChart {
       d3.select("#x-axis").selectAll('g').remove()
     }
     else{
-      OWID_data_selected= this.globalApplicationState.covidData.filter(function(d){
+        OWID_data_selected= this.globalApplicationState.covidData.filter(function(d){
         return d.iso_code.includes("OWID")
       });
     }
@@ -102,80 +102,6 @@ class LineChart {
     })
     console.log(minDate,maxDate,maxCases);
 
-
-// Min and max date from dates,
-    // let minDate = d3.min(dates)
-    // // let minDate = new Date("2020-01-01")
-    // let maxDate = d3.max(dates)
-    // let maxCases = d3.max(OWID_data_selected, function(d){
-    //   return parseFloat(d.total_cases_per_million)
-    // })
-    // console.log("min date: ",minDate,"max date: ",maxDate,maxCases);
-    // let timeConv = d3.timeParse("%d-%b-%Y");
-    // let dates=[];
-    // for (let x of this.continents){
-    //   // console.log("ad ",x)
-    //   let f = 0;
-    //   for(let i of x){
-    //     // console.log("i ",i);
-    //     if(f==1){
-    //       for(let k in i){
-    //         // console.log(k,x[i][k].date)
-    //         // console.log(k,x[1][k].date);
-    //         // dates.push(x[1][k]);
-    //         dates.push(x[1][k])
-    //         // let newDate = d3.map(x[1][k].date)
-    //       }
-    //       f=0;
-    //     }
-    //     f+=1;
-    //   }
-    // }
-    // let timeConv = d3.timeParse("%d-%b-%Y");
-    // const dateParser = d3.timeParse("%d/%m/%Y");
-    // const xAccessor = (d) => dateParser(d);
-    // console.log(xAccessor(dates[0].date));
-    // console.log(dates);
-    // let newDate = dates.map((d) => new Date(d.date));
-    // console.log(Date.parse(d3.min(dates)),Date.parse(d3.max(dates)));
-    // console.log(d3.extent(dates))
-    // console.log("conv: ",timeConv(2020-01-22))
-    // let dd = 
-    // let maxDate = this.continents.map(function(d) {
-    //   d.array.forEach(element => {
-    //     console.log(element)
-    //   });
-    // })
-    // Array.from(this.continents, (x,i) => {
-    //   // console.log(x[1][0])
-    //   for(let c in x){
-    //     for(let i in c){
-    //       if(c==1){
-    //         console.log(x[c][i])
-    //       }
-    //     }
-    //   }
-    // })
-
-/// worked axis
-    // let cases=[];
-    // for (let x of this.continents){
-    //   // console.log("ad ",x)
-    //   let f = 0;
-    //   for(let i of x){
-    //     // console.log("i ",i);
-    //     if(f==1){
-    //       for(let k in i){
-    //         // console.log(k,x[i][k].date)
-    //         // console.log(k,x[1][k].total_cases_per_million);
-    //         cases.push(x[1][k]);
-    //         // cases.push(x[1][k])
-    //       }
-    //       f=0;
-    //     }
-    //     f+=1;
-    //   }
-    // }
 
     // // console.log("max: ", d3.max(cases, d => parseFloat(d)));
     this.lineChart = d3.select("#line-chart")

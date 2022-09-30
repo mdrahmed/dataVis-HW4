@@ -31,9 +31,16 @@ class MapVis {
 
     this.graticule = d3.geoGraticule();
     // this.svg.select("graticules")
-            
+    
+    let max_case = d3.max(globalApplicationState.covidData, (d) => {
+      //console.log(d.total_cases_per_million)
+      return parseFloat(d.total_cases_per_million)
+    })
+    
+    console.log("calculated max:",max_case);
+    // this.colorScale = d3.scaleSequential(d3.interpolateReds).domain([0, 655309.333]);
+    this.colorScale = d3.scaleSequential(d3.interpolateReds).domain([0, max_case]);
 
-    this.colorScale = d3.scaleSequential(d3.interpolateReds).domain([0, 655309.333]);
     // this.color = d3.scaleOrdinal(d3.schemeCategory10);
     // // this.colorS = d3.scaleSequential(d3.interpolateReds).domain([0, 99990.076]);
     // this.max_cases=0;
